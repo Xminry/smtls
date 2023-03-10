@@ -5,7 +5,6 @@
 package qtls
 
 import (
-	"crypto"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/des"
@@ -193,13 +192,13 @@ type cipherSuiteTLS13 struct {
 	id     uint16
 	keyLen int
 	aead   func(key, fixedNonce []byte) aead
-	hash   crypto.Hash
+	hash   Hash
 }
 
 type CipherSuiteTLS13 struct {
 	ID     uint16
 	KeyLen int
-	Hash   crypto.Hash
+	Hash   Hash
 	AEAD   func(key, fixedNonce []byte) cipher.AEAD
 }
 
@@ -208,10 +207,10 @@ func (c *CipherSuiteTLS13) IVLen() int {
 }
 
 var cipherSuitesTLS13 = []*cipherSuiteTLS13{ // TODO: replace with a map.
-	{TLS_SM4_GCM_SM3, 16, aeadSM4GCMTLS13, crypto.SHA256},
-	{TLS_AES_128_GCM_SHA256, 16, aeadAESGCMTLS13, crypto.SHA256},
-	{TLS_CHACHA20_POLY1305_SHA256, 32, aeadChaCha20Poly1305, crypto.SHA256},
-	{TLS_AES_256_GCM_SHA384, 32, aeadAESGCMTLS13, crypto.SHA384},
+	{TLS_SM4_GCM_SM3, 16, aeadSM4GCMTLS13, SM3},
+	{TLS_AES_128_GCM_SHA256, 16, aeadAESGCMTLS13, SHA256},
+	{TLS_CHACHA20_POLY1305_SHA256, 32, aeadChaCha20Poly1305, SHA256},
+	{TLS_AES_256_GCM_SHA384, 32, aeadAESGCMTLS13, SHA384},
 }
 
 // cipherSuitesPreferenceOrder is the order in which we'll select (on the
