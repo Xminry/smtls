@@ -23,7 +23,8 @@ func main() {
 	if ok := certPool.AppendCertsFromPEM(cert); !ok {
 		log.Fatalf("unable to parse cert from %s", *certFile)
 	}
-	config := &tls.Config{RootCAs: certPool, InsecureSkipVerify: true}
+	config := &tls.Config{RootCAs: certPool, InsecureSkipVerify: true, CipherSuites: []uint16{qtls.TLS_SM4_GCM_SM3},
+		MinVersion: qtls.VersionTLS13}
 	conn, err := qtls.Dial("tcp", "localhost:"+*port, config, nil)
 	if err != nil {
 		log.Fatal(err)

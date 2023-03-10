@@ -19,7 +19,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	config := &tls.Config{Certificates: []tls.Certificate{cert}}
+	config := &tls.Config{Certificates: []tls.Certificate{cert},
+		CipherSuites: []uint16{qtls.TLS_SM4_GCM_SM3},
+		MinVersion:   qtls.VersionTLS13}
 	log.Printf("listening on port %s\n", *port)
 	l, err := qtls.Listen("tcp", ":"+*port, config, nil)
 	if err != nil {
