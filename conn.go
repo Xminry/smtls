@@ -9,6 +9,7 @@ package qtls
 import (
 	"bytes"
 	"context"
+	"crypto"
 	"crypto/cipher"
 	"crypto/subtle"
 	"crypto/x509"
@@ -239,7 +240,7 @@ func (hc *halfConn) exportKey(encLevel EncryptionLevel, suite *cipherSuiteTLS13,
 		s := &CipherSuiteTLS13{
 			ID:     suite.id,
 			KeyLen: suite.keyLen,
-			Hash:   suite.hash,
+			Hash:   crypto.Hash(suite.hash),
 			AEAD:   func(key, fixedNonce []byte) cipher.AEAD { return suite.aead(key, fixedNonce) },
 		}
 		hc.setKeyCallback(encLevel, s, trafficSecret)

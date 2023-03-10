@@ -5,6 +5,7 @@
 package qtls
 
 import (
+	"crypto"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/des"
@@ -198,7 +199,7 @@ type cipherSuiteTLS13 struct {
 type CipherSuiteTLS13 struct {
 	ID     uint16
 	KeyLen int
-	Hash   Hash
+	Hash   crypto.Hash
 	AEAD   func(key, fixedNonce []byte) cipher.AEAD
 }
 
