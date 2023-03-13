@@ -639,7 +639,6 @@ func (c *Conn) readRecordOrCCS(expectChangeCipherSpec bool) error {
 		return c.in.err
 	}
 	handshakeComplete := c.handshakeComplete()
-
 	// This function modifies c.rawInput, which owns the c.input memory.
 	if c.input.Len() != 0 {
 		return c.in.setErrorLocked(errors.New("tls: internal error: attempted to read record with pending application data"))
@@ -869,7 +868,6 @@ func (c *Conn) sendAlert(err alert) error {
 		c.extraConfig.AlternativeRecordLayer.SendAlert(uint8(err))
 		return &net.OpError{Op: "local error", Err: err}
 	}
-
 	c.out.Lock()
 	defer c.out.Unlock()
 	return c.sendAlertLocked(err)

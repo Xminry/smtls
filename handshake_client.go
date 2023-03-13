@@ -13,6 +13,7 @@ import (
 	"crypto/rsa"
 	"crypto/subtle"
 	"crypto/x509"
+	//"crypto/x509/pkix"
 	"errors"
 	"fmt"
 	"hash"
@@ -22,6 +23,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	gmx509 "github.com/tjfoc/gmsm/x509"
 	"golang.org/x/crypto/cryptobyte"
 )
 
@@ -963,13 +965,61 @@ func (hs *clientHandshakeState) sendFinished(out []byte) error {
 // c.verifiedChains and c.peerCertificates or sending the appropriate alert.
 func (c *Conn) verifyServerCertificate(certificates [][]byte) error {
 	certs := make([]*x509.Certificate, len(certificates))
+
 	for i, asn1Data := range certificates {
-		cert, err := x509.ParseCertificate(asn1Data)
+		cert, err := gmx509.ParseCertificate(asn1Data)
+
 		if err != nil {
 			c.sendAlert(alertBadCertificate)
 			return errors.New("tls: failed to parse certificate from server: " + err.Error())
 		}
-		certs[i] = cert
+		var cert1 x509.Certificate = x509.Certificate{
+			Raw:                         cert.Raw,
+			RawTBSCertificate:           cert.RawTBSCertificate,
+			RawSubjectPublicKeyInfo:     cert.RawSubjectPublicKeyInfo,
+			RawSubject:                  cert.RawSubject,
+			RawIssuer:                   cert.RawIssuer,
+			Signature:                   cert.Signature,
+			SignatureAlgorithm:          x509.SignatureAlgorithm(cert.SignatureAlgorithm),
+			PublicKeyAlgorithm:          x509.PublicKeyAlgorithm(cert.PublicKeyAlgorithm),
+			PublicKey:                   cert.PublicKey,
+			Version:                     cert.Version,
+			SerialNumber:                cert.SerialNumber,
+			Issuer:                      cert.Issuer,
+			Subject:                     cert.Subject,
+			NotBefore:                   cert.NotBefore,
+			NotAfter:                    cert.NotAfter,
+			KeyUsage:                    x509.KeyUsage(cert.KeyUsage),
+			Extensions:                  cert.Extensions,
+			ExtraExtensions:             cert.ExtraExtensions,
+			UnhandledCriticalExtensions: cert.UnhandledCriticalExtensions,
+			ExtKeyUsage:                 nil,
+			UnknownExtKeyUsage:          cert.UnknownExtKeyUsage,
+			BasicConstraintsValid:       cert.BasicConstraintsValid,
+			IsCA:                        cert.IsCA,
+			MaxPathLen:                  cert.MaxPathLen,
+			MaxPathLenZero:              cert.MaxPathLenZero,
+			SubjectKeyId:                cert.SubjectKeyId,
+			AuthorityKeyId:              cert.AuthorityKeyId,
+			OCSPServer:                  cert.OCSPServer,
+			IssuingCertificateURL:       cert.IssuingCertificateURL,
+			DNSNames:                    cert.DNSNames,
+			EmailAddresses:              cert.EmailAddresses,
+			IPAddresses:                 cert.IPAddresses,
+			URIs:                        nil,
+			PermittedDNSDomainsCritical: cert.PermittedDNSDomainsCritical,
+			PermittedDNSDomains:         cert.PermittedDNSDomains,
+			ExcludedDNSDomains:          nil,
+			PermittedIPRanges:           nil,
+			ExcludedIPRanges:            nil,
+			PermittedEmailAddresses:     nil,
+			ExcludedEmailAddresses:      nil,
+			PermittedURIDomains:         nil,
+			ExcludedURIDomains:          nil,
+			CRLDistributionPoints:       cert.CRLDistributionPoints,
+			PolicyIdentifiers:           cert.PolicyIdentifiers,
+		}
+		certs[i] = &cert1
 	}
 
 	if !c.config.InsecureSkipVerify {

@@ -55,6 +55,8 @@ func verifyHandshakeSignature(sigType uint8, pubkey crypto.PublicKey, hashFunc c
 		if err := rsa.VerifyPSS(pubKey, hashFunc, signed, sig, signOpts); err != nil {
 			return err
 		}
+	case signatureSM3:
+
 	default:
 		return errors.New("internal error: unknown signature type")
 	}
@@ -87,7 +89,7 @@ func signedMessage(sigHash crypto.Hash, context string, transcript hash.Hash) []
 		b.Write(transcript.Sum(nil))
 		return b.Bytes()
 	}
-	h := sigHash.New()
+	h := Hash(sigHash).New()
 	h.Write(signaturePadding)
 	io.WriteString(h, context)
 	h.Write(transcript.Sum(nil))
@@ -106,6 +108,8 @@ func typeAndHashFromSignatureScheme(signatureAlgorithm SignatureScheme) (sigType
 		sigType = signatureECDSA
 	case Ed25519:
 		sigType = signatureEd25519
+	case SM2Sig_SM3:
+		sigType = signatureSM3
 
 	default:
 		return 0, 0, fmt.Errorf("unsupported signature algorithm: %v", signatureAlgorithm)
@@ -121,6 +125,8 @@ func typeAndHashFromSignatureScheme(signatureAlgorithm SignatureScheme) (sigType
 		hash = crypto.SHA512
 	case Ed25519:
 		hash = directSigning
+	case SM2Sig_SM3:
+		hash = crypto.Hash(SM3)
 	default:
 		return 0, 0, fmt.Errorf("unsupported signature algorithm: %v", signatureAlgorithm)
 	}
