@@ -764,6 +764,7 @@ func (hs *serverHandshakeState) readFinished(out []byte) error {
 	if len(verify) != len(clientFinished.verifyData) ||
 		subtle.ConstantTimeCompare(verify, clientFinished.verifyData) != 1 {
 		c.sendAlert(alertHandshakeFailure)
+		fmt.Println(111111111111111111)
 		return errors.New("tls: client's Finished message is incorrect")
 	}
 

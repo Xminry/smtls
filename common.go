@@ -19,6 +19,7 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
+	"github.com/tjfoc/gmsm/sm2"
 	"io"
 	"net"
 	"strings"
@@ -125,6 +126,7 @@ const (
 type CurveID = tls.CurveID
 
 const (
+	CurveSM2  CurveID = 41
 	CurveP256 CurveID = 23
 	CurveP384 CurveID = 24
 	CurveP521 CurveID = 25
@@ -186,6 +188,8 @@ var directSigning crypto.Hash = 0
 // CertificateRequest. The two fields are merged to match with TLS 1.3.
 // Note that in TLS 1.2, the ECDSA algorithms are not constrained to P-256, etc.
 var defaultSupportedSignatureAlgorithms = []SignatureScheme{
+	//gm
+	SM2Sig_SM3, //RFC8998
 	PSSWithSHA256,
 	ECDSAWithP256AndSHA256,
 	Ed25519,
@@ -353,6 +357,9 @@ type ClientSessionCache = tls.ClientSessionCache
 type SignatureScheme = tls.SignatureScheme
 
 const (
+	//gm
+	SM2Sig_SM3 SignatureScheme = 0x0708 //RFC8998
+
 	// RSASSA-PKCS1-v1_5 algorithms.
 	PKCS1WithSHA256 SignatureScheme = 0x0401
 	PKCS1WithSHA384 SignatureScheme = 0x0501
@@ -1311,6 +1318,25 @@ func (chi *clientHelloInfo) SupportsCertificate(c *Certificate) error {
 			}
 			ecdsaCipherSuite = true
 		case *rsa.PublicKey:
+		case *sm2.PublicKey:
+			var curve CurveID
+			switch pub.Curve {
+			case sm2.P256Sm2():
+				curve = CurveSM2
+			default:
+				return supportsRSAFallback(unsupportedCertificateError(c))
+			}
+			var curveOk bool
+			for _, c := range chi.SupportedCurves {
+				if c == curve && conf.supportsCurve(c) {
+					curveOk = true
+					break
+				}
+			}
+			if !curveOk {
+				return errors.New("client doesn't support certificate curve")
+			}
+			ecdsaCipherSuite = true
 		default:
 			return supportsRSAFallback(unsupportedCertificateError(c))
 		}

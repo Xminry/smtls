@@ -1,12 +1,11 @@
 package main
 
 import (
-	"crypto/tls"
+	"github.com/tjfoc/gmsm/gmtls"
 	"github.com/tjfoc/gmsm/x509"
 
 	"flag"
 	"fmt"
-	"github.com/quic-go/qtls-go1-19"
 	"io"
 	"log"
 	"os"
@@ -25,10 +24,9 @@ func main() {
 		log.Fatalf("unable to parse cert from %s", *certFile)
 	}
 
-	config := &tls.Config{InsecureSkipVerify: true, CipherSuites: []uint16{qtls.TLS_SM4_GCM_SM3},
-		MinVersion:       qtls.VersionTLS13,
-		CurvePreferences: []qtls.CurveID{qtls.CurveSM2}}
-	conn, err := qtls.Dial("tcp", "localhost:"+*port, config, nil)
+	config := &gmtls.Config{InsecureSkipVerify: true, CipherSuites: []uint16{gmtls.GMTLS_ECDHE_SM2_WITH_SM4_SM3},
+		MinVersion: gmtls.VersionTLS12}
+	conn, err := gmtls.Dial("tcp", "localhost:"+*port, config)
 	if err != nil {
 		log.Fatal(err)
 	}

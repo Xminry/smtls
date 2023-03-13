@@ -2,7 +2,7 @@ package main
 
 import (
 	"crypto/tls"
-	"github.com/tjfoc/gmsm/x509"
+	"crypto/x509"
 
 	"flag"
 	"fmt"
@@ -14,7 +14,7 @@ import (
 
 func main() {
 	port := flag.String("port", "8360", "port to connect")
-	certFile := flag.String("certfile", "testdata/gm-example-cert.pem", "trusted CA certificate")
+	certFile := flag.String("certfile", "testdata/example-cert.pem", "trusted CA certificate")
 	flag.Parse()
 	cert, err := os.ReadFile(*certFile)
 	if err != nil {

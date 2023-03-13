@@ -1,9 +1,7 @@
 package main
 
 import (
-	"crypto/tls"
 	"flag"
-	"github.com/quic-go/qtls-go1-19"
 	"github.com/tjfoc/gmsm/gmtls"
 	"io"
 	"log"
@@ -19,24 +17,15 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	cert1 := tls.Certificate{
-		Certificate:                  cert.Certificate,
-		PrivateKey:                   cert.PrivateKey,
-		SupportedSignatureAlgorithms: nil,
-		OCSPStaple:                   cert.OCSPStaple,
-		SignedCertificateTimestamps:  cert.SignedCertificateTimestamps,
-		Leaf:                         nil,
-	}
+
 	if err != nil {
 		log.Fatal(err)
 	}
-	config := &qtls.Config{Certificates: []tls.Certificate{cert1},
-		CipherSuites:     []uint16{qtls.TLS_SM4_GCM_SM3},
-		MinVersion:       qtls.VersionTLS13,
-		CurvePreferences: []qtls.CurveID{qtls.CurveSM2},
-	}
+	config := &gmtls.Config{Certificates: []gmtls.Certificate{cert},
+		CipherSuites: []uint16{gmtls.GMTLS_ECDHE_SM2_WITH_SM4_SM3},
+		MinVersion:   gmtls.VersionTLS12}
 	log.Printf("listening on port %s\n", *port)
-	l, err := qtls.Listen("tcp", ":"+*port, config, nil)
+	l, err := gmtls.Listen("tcp", ":"+*port, config)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,14 +37,8 @@ func main() {
 		}
 		log.Printf("accepted connection from %s\n", conn.RemoteAddr())
 		go func(c net.Conn) {
-			_, err := io.Copy(c, c)
-			if err != nil {
-				log.Println(err)
-			}
-			err = c.Close()
-			if err != nil {
-				log.Println(err)
-			}
+			io.Copy(c, c)
+			c.Close()
 			log.Printf("closing connection from %s\n", conn.RemoteAddr())
 		}(conn)
 	}

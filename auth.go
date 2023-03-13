@@ -13,6 +13,7 @@ import (
 	"crypto/rsa"
 	"errors"
 	"fmt"
+	"github.com/tjfoc/gmsm/sm2"
 	"hash"
 	"io"
 )
@@ -105,6 +106,7 @@ func typeAndHashFromSignatureScheme(signatureAlgorithm SignatureScheme) (sigType
 		sigType = signatureECDSA
 	case Ed25519:
 		sigType = signatureEd25519
+
 	default:
 		return 0, 0, fmt.Errorf("unsupported signature algorithm: %v", signatureAlgorithm)
 	}
@@ -210,6 +212,8 @@ func signatureSchemesForCertificate(version uint16, cert *Certificate) []Signatu
 		}
 	case ed25519.PublicKey:
 		sigAlgs = []SignatureScheme{Ed25519}
+	case *sm2.PublicKey:
+		sigAlgs = []SignatureScheme{SM2Sig_SM3}
 	default:
 		return nil
 	}
@@ -281,6 +285,13 @@ func unsupportedCertificateError(cert *Certificate) error {
 	case *rsa.PublicKey:
 		return fmt.Errorf("tls: certificate RSA key size too small for supported signature algorithms")
 	case ed25519.PublicKey:
+	case *sm2.PublicKey:
+		switch pub.Curve {
+		case sm2.P256Sm2():
+		default:
+			return fmt.Errorf("tls: unsupported certificate curve (%s)", pub.Curve.Params().Name)
+		}
+
 	default:
 		return fmt.Errorf("tls: unsupported certificate key (%T)", pub)
 	}

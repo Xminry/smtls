@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"flag"
 	"github.com/quic-go/qtls-go1-19"
-	"github.com/tjfoc/gmsm/gmtls"
 	"io"
 	"log"
 	"net"
@@ -12,25 +11,18 @@ import (
 
 func main() {
 	port := flag.String("port", "8360", "listening port")
-	certFile := flag.String("cert", "testdata/gm-example-cert.pem", "certificate PEM file")
-	keyFile := flag.String("key", "testdata/gm-example-key.pem", "key PEM file")
+	certFile := flag.String("cert", "testdata/example-cert.pem", "certificate PEM file")
+	keyFile := flag.String("key", "testdata/example-key.pem", "key PEM file")
 	flag.Parse()
-	cert, err := gmtls.LoadX509KeyPair(*certFile, *keyFile)
+	cert, err := tls.LoadX509KeyPair(*certFile, *keyFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-	cert1 := tls.Certificate{
-		Certificate:                  cert.Certificate,
-		PrivateKey:                   cert.PrivateKey,
-		SupportedSignatureAlgorithms: nil,
-		OCSPStaple:                   cert.OCSPStaple,
-		SignedCertificateTimestamps:  cert.SignedCertificateTimestamps,
-		Leaf:                         nil,
-	}
+
 	if err != nil {
 		log.Fatal(err)
 	}
-	config := &qtls.Config{Certificates: []tls.Certificate{cert1},
+	config := &qtls.Config{Certificates: []tls.Certificate{cert},
 		CipherSuites:     []uint16{qtls.TLS_SM4_GCM_SM3},
 		MinVersion:       qtls.VersionTLS13,
 		CurvePreferences: []qtls.CurveID{qtls.CurveSM2},
