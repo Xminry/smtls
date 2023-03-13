@@ -11,8 +11,8 @@ import (
 
 func main() {
 	port := flag.String("port", "8360", "listening port")
-	certFile := flag.String("cert", "testdata/example-cert.pem", "certificate PEM file")
-	keyFile := flag.String("key", "testdata/example-key.pem", "key PEM file")
+	certFile := flag.String("cert", "testdata/gm-example-cert.pem", "certificate PEM file")
+	keyFile := flag.String("key", "testdata/gm-example-key.pem", "key PEM file")
 	flag.Parse()
 	cert, err := tls.LoadX509KeyPair(*certFile, *keyFile)
 
