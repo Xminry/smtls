@@ -13,6 +13,9 @@ import (
 	"crypto/rsa"
 	"crypto/subtle"
 	"crypto/x509"
+	"github.com/tjfoc/gmsm/sm2"
+	minx509 "minlib/minsecurity/crypto/x509"
+
 	//"crypto/x509/pkix"
 	"errors"
 	"fmt"
@@ -23,7 +26,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	gmx509 "github.com/tjfoc/gmsm/x509"
 	"golang.org/x/crypto/cryptobyte"
 )
 
@@ -967,12 +969,17 @@ func (c *Conn) verifyServerCertificate(certificates [][]byte) error {
 	certs := make([]*x509.Certificate, len(certificates))
 
 	for i, asn1Data := range certificates {
-		cert, err := gmx509.ParseCertificate(asn1Data)
+		cert, err := minx509.ParseCertificate(asn1Data)
 
 		if err != nil {
 			c.sendAlert(alertBadCertificate)
 			return errors.New("tls: failed to parse certificate from server: " + err.Error())
 		}
+		var exkusg []x509.ExtKeyUsage
+		for ii := 0; ii < len(cert.ExtKeyUsage); ii++ {
+			exkusg = append(exkusg, x509.ExtKeyUsage(cert.ExtKeyUsage[ii]))
+		}
+
 		var cert1 x509.Certificate = x509.Certificate{
 			Raw:                         cert.Raw,
 			RawTBSCertificate:           cert.RawTBSCertificate,
@@ -993,7 +1000,7 @@ func (c *Conn) verifyServerCertificate(certificates [][]byte) error {
 			Extensions:                  cert.Extensions,
 			ExtraExtensions:             cert.ExtraExtensions,
 			UnhandledCriticalExtensions: cert.UnhandledCriticalExtensions,
-			ExtKeyUsage:                 nil,
+			ExtKeyUsage:                 exkusg,
 			UnknownExtKeyUsage:          cert.UnknownExtKeyUsage,
 			BasicConstraintsValid:       cert.BasicConstraintsValid,
 			IsCA:                        cert.IsCA,
@@ -1006,16 +1013,16 @@ func (c *Conn) verifyServerCertificate(certificates [][]byte) error {
 			DNSNames:                    cert.DNSNames,
 			EmailAddresses:              cert.EmailAddresses,
 			IPAddresses:                 cert.IPAddresses,
-			URIs:                        nil,
+			URIs:                        cert.URIs,
 			PermittedDNSDomainsCritical: cert.PermittedDNSDomainsCritical,
 			PermittedDNSDomains:         cert.PermittedDNSDomains,
-			ExcludedDNSDomains:          nil,
-			PermittedIPRanges:           nil,
-			ExcludedIPRanges:            nil,
-			PermittedEmailAddresses:     nil,
-			ExcludedEmailAddresses:      nil,
-			PermittedURIDomains:         nil,
-			ExcludedURIDomains:          nil,
+			ExcludedDNSDomains:          cert.ExcludedDNSDomains,
+			PermittedIPRanges:           cert.PermittedIPRanges,
+			ExcludedIPRanges:            cert.ExcludedIPRanges,
+			PermittedEmailAddresses:     cert.PermittedEmailAddresses,
+			ExcludedEmailAddresses:      cert.ExcludedEmailAddresses,
+			PermittedURIDomains:         cert.PermittedURIDomains,
+			ExcludedURIDomains:          cert.ExcludedURIDomains,
 			CRLDistributionPoints:       cert.CRLDistributionPoints,
 			PolicyIdentifiers:           cert.PolicyIdentifiers,
 		}
@@ -1042,7 +1049,7 @@ func (c *Conn) verifyServerCertificate(certificates [][]byte) error {
 	}
 
 	switch certs[0].PublicKey.(type) {
-	case *rsa.PublicKey, *ecdsa.PublicKey, ed25519.PublicKey:
+	case *rsa.PublicKey, *ecdsa.PublicKey, ed25519.PublicKey, *sm2.PublicKey:
 		break
 	default:
 		c.sendAlert(alertUnsupportedCertificate)
