@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"flag"
+	"fmt"
 	"github.com/quic-go/qtls-go1-19"
 	"github.com/tjfoc/gmsm/gmtls"
 	"io"
@@ -15,6 +16,9 @@ func main() {
 	certFile := flag.String("cert", "testdata/gm-example-cert.pem", "certificate PEM file")
 	keyFile := flag.String("key", "testdata/gm-example-key.pem", "key PEM file")
 	flag.Parse()
+	cert9 := *certFile
+	key9 := *keyFile
+	fmt.Println(cert9, key9)
 	cert, err := gmtls.LoadX509KeyPair(*certFile, *keyFile)
 	if err != nil {
 		log.Fatal(err)

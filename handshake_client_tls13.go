@@ -12,6 +12,7 @@ import (
 	"crypto/rsa"
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"hash"
 	"sync/atomic"
 	"time"
@@ -115,6 +116,7 @@ func (hs *clientHandshakeStateTLS13) handshake() error {
 
 	atomic.StoreUint32(&c.handshakeStatus, 1)
 	c.updateConnectionState()
+	fmt.Println(hs.c.config.CurvePreferences)
 	return nil
 }
 

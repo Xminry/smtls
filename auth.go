@@ -56,6 +56,18 @@ func verifyHandshakeSignature(sigType uint8, pubkey crypto.PublicKey, hashFunc c
 			return err
 		}
 	case signatureSM3:
+		pubKey1, ok := pubkey.(*ecdsa.PublicKey)
+		pubKey := sm2.PublicKey{
+			Curve: pubKey1.Curve,
+			X:     pubKey1.X,
+			Y:     pubKey1.Y,
+		}
+		if !ok {
+			return errors.New("tls: SM2 signing requires a SM2 public key")
+		}
+		if ok := pubKey.Verify(signed, sig); !ok {
+			return errors.New("verify sm2 signature error")
+		}
 
 	default:
 		return errors.New("internal error: unknown signature type")
