@@ -8,9 +8,13 @@ Shangmi(SM) TLS1.3
 This repository contains a modified version of the standard library's TLS implementation, modified for the QUIC protocol. It is used by [quic-go](https://github.com/lucas-clemente/quic-go).
 
 based on smtls, support sm2,sm3,sm4.
+
 satisfy RFC8998
+
 基于QTLS开发的国密TLS库
+
 支持RFC8998标准
+
 支持TLS1.3
 
 gmtls1.3
