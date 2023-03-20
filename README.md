@@ -1,5 +1,7 @@
 # smtls-gm
 
+Shangmi(SM) TLS1.3
+
 [![Go Reference](https://pkg.go.dev/badge/github.com/quic-go/smtls-go1-19.svg)](https://pkg.go.dev/github.com/quic-go/smtls-go1-19)
 [![.github/workflows/go-test.yml](https://github.com/quic-go/smtls-go1-19/actions/workflows/go-test.yml/badge.svg)](https://github.com/quic-go/smtls-go1-19/actions/workflows/go-test.yml)
 
