@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"github.com/Xminry/smtls"
 	"github.com/emmansun/gmsm/smx509"
 
 	"flag"
