@@ -11,6 +11,8 @@ satisfy RFC8998
 gmtls1.3
 
 a example for tls1.3 is in example-tls13
+
 a example for gmtls1.3 without CA is in example-gmtls13-noCA
+
 a example for gmtls1.3 with CA is in example-gmtls13-CA
 
