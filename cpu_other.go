@@ -1,7 +1,7 @@
 //go:build js
 // +build js
 
-package qtls
+package smtls
 
 var (
 	hasGCMAsmAMD64 = false

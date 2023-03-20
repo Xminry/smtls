@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package qtls
+package smtls
 
 import (
 	"bytes"
@@ -1156,7 +1156,7 @@ func (c *Conn) getClientCertificate(cri *CertificateRequestInfo) (*Certificate, 
 	return new(Certificate), nil
 }
 
-const clientSessionCacheKeyPrefix = "qtls-"
+const clientSessionCacheKeyPrefix = "smtls-"
 
 // clientSessionCacheKey returns a key used to cache sessionTickets that could
 // be used to resume previously negotiated TLS sessions with a server.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package qtls
+package smtls
 
 import (
 	"bytes"
@@ -473,7 +473,7 @@ func TestTLSUniqueMatches(t *testing.T) {
 
 func TestVerifyHostname(t *testing.T) {
 	// testenv.MustHaveExternalNetwork is part of an internal package
-	// Skip this test in qtls.
+	// Skip this test in smtls.
 	t.Skip("testenv.MustHaveExternalNetwork is part of an internal package")
 
 	c, err := Dial("tcp", "www.google.com:https", nil, nil)

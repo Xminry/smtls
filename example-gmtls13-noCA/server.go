@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"flag"
 	"fmt"
-	"github.com/quic-go/qtls-go1-19"
 	"io"
 	"log"
 	"net"
@@ -18,19 +17,19 @@ func main() {
 	cert9 := *certFile
 	key9 := *keyFile
 	fmt.Println(cert9, key9)
-	cert, err := qtls.LoadX509KeyPair(*certFile, *keyFile)
+	cert, err := smtls.LoadX509KeyPair(*certFile, *keyFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	config := &qtls.Config{
+	config := &smtls.Config{
 		Certificates:     []tls.Certificate{cert},
-		CipherSuites:     []uint16{qtls.TLS_SM4_GCM_SM3},
-		MinVersion:       qtls.VersionTLS13,
-		CurvePreferences: []qtls.CurveID{qtls.CurveSM2},
+		CipherSuites:     []uint16{smtls.TLS_SM4_GCM_SM3},
+		MinVersion:       smtls.VersionTLS13,
+		CurvePreferences: []smtls.CurveID{smtls.CurveSM2},
 	}
 	log.Printf("listening on port %s\n", *port)
-	l, err := qtls.Listen("tcp", ":"+*port, config, nil)
+	l, err := smtls.Listen("tcp", ":"+*port, config, nil)
 	if err != nil {
 		log.Fatal(err)
 	}

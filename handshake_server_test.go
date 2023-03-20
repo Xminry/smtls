@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package qtls
+package smtls
 
 import (
 	"bytes"
@@ -1790,7 +1790,7 @@ func TestCloneHash(t *testing.T) {
 	h1 := crypto.SHA256.New()
 	h1.Write([]byte("test"))
 	s1 := h1.Sum(nil)
-	h2 := cloneHash(h1, crypto.SHA256)
+	h2 := cloneHash(h1, Hash(crypto.SHA256))
 	s2 := h2.Sum(nil)
 	if !bytes.Equal(s1, s2) {
 		t.Error("cloned hash generated a different sum")

@@ -1,4 +1,4 @@
-package qtls
+package smtls
 
 import (
 	"crypto/tls"
@@ -8,19 +8,19 @@ import (
 
 func init() {
 	if !structsEqual(&tls.ConnectionState{}, &connectionState{}) {
-		panic("qtls.ConnectionState doesn't match")
+		panic("smtls.ConnectionState doesn't match")
 	}
 	if !structsEqual(&tls.ClientSessionState{}, &clientSessionState{}) {
-		panic("qtls.ClientSessionState doesn't match")
+		panic("smtls.ClientSessionState doesn't match")
 	}
 	if !structsEqual(&tls.CertificateRequestInfo{}, &certificateRequestInfo{}) {
-		panic("qtls.CertificateRequestInfo doesn't match")
+		panic("smtls.CertificateRequestInfo doesn't match")
 	}
 	if !structsEqual(&tls.Config{}, &config{}) {
-		panic("qtls.Config doesn't match")
+		panic("smtls.Config doesn't match")
 	}
 	if !structsEqual(&tls.ClientHelloInfo{}, &clientHelloInfo{}) {
-		panic("qtls.ClientHelloInfo doesn't match")
+		panic("smtls.ClientHelloInfo doesn't match")
 	}
 }
 

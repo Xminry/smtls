@@ -4,7 +4,7 @@
 
 //go:build unix
 
-package qtls
+package smtls
 
 import (
 	"errors"

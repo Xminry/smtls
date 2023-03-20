@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 // Package crypto collects common cryptographic constants.
-package qtls
+package smtls
 
 import (
 	"crypto"

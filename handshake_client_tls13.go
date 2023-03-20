@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package qtls
+package smtls
 
 import (
 	"bytes"
@@ -709,7 +709,7 @@ func (c *Conn) handleNewSessionTicket(msg *newSessionTicketMsgTLS13) error {
 
 	// We need to save the max_early_data_size that the server sent us, in order
 	// to decide if we're going to try 0-RTT with this ticket.
-	// However, at the same time, the qtls.ClientSessionTicket needs to be equal to
+	// However, at the same time, the smtls.ClientSessionTicket needs to be equal to
 	// the tls.ClientSessionTicket, so we can't just add a new field to the struct.
 	// We therefore abuse the nonce field (which is a byte slice)
 	nonceWithEarlyData := make([]byte, len(msg.nonce)+4)

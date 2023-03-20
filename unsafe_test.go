@@ -1,4 +1,4 @@
-package qtls
+package smtls
 
 import (
 	"bytes"

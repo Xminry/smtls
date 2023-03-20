@@ -16,16 +16,14 @@ import (
 	"math/big"
 	"net"
 	"time"
-
-	"github.com/quic-go/qtls-go1-19"
 )
 
 func main() {
-	tlsConf, err := generateQTLSConfig()
+	tlsConf, err := generatesmtlsConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
-	tlsConf.ClientAuth = qtls.RequestClientCert
+	tlsConf.ClientAuth = smtls.RequestClientCert
 	tlsConf.InsecureSkipVerify = true
 	ln, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
@@ -36,7 +34,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	c := qtls.Server(conn, tlsConf)
+	c := smtls.Server(conn, tlsConf)
 	if err := c.Handshake(); err != nil {
 		log.Fatal(err)
 	}
@@ -46,14 +44,14 @@ func main() {
 }
 
 func connect(addr net.Addr) {
-	tlsConf, err := generateQTLSConfig()
+	tlsConf, err := generatesmtlsConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
 	tlsConf.InsecureSkipVerify = true
-	tlsConf.ClientSessionCache = qtls.NewLRUClientSessionCache(10)
+	tlsConf.ClientSessionCache = smtls.NewLRUClientSessionCache(10)
 	tlsConf.MinVersion = tls.VersionTLS13
-	conn, err := qtls.Dial("tcp", addr.String(), tlsConf)
+	conn, err := smtls.Dial("tcp", addr.String(), tlsConf)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -63,7 +61,7 @@ func connect(addr net.Addr) {
 	fmt.Println("dialed", conn.RemoteAddr())
 }
 
-func generateQTLSConfig() (*qtls.Config, error) {
+func generatesmtlsConfig() (*smtls.Config, error) {
 	// Generate a new private key
 	privKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
@@ -96,15 +94,15 @@ func generateQTLSConfig() (*qtls.Config, error) {
 	}
 
 	// Create a new TLS certificate with the private key and self-signed certificate
-	cert := qtls.Certificate{
+	cert := smtls.Certificate{
 		Certificate: [][]byte{derBytes},
 		PrivateKey:  privKey,
 		OCSPStaple:  make([]byte, math.MaxUint16-372),
 	}
 
 	// Create a new TLS configuration with the self-signed certificate
-	tlsConfig := &qtls.Config{
-		Certificates: []qtls.Certificate{cert},
+	tlsConfig := &smtls.Config{
+		Certificates: []smtls.Certificate{cert},
 	}
 	return tlsConfig, nil
 }

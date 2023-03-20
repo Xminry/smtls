@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package qtls
+package smtls
 
 import (
 	"bytes"
@@ -351,7 +351,7 @@ type clientSessionState struct {
 // SessionID-based resumption. In TLS 1.3 they were merged into PSK modes, which
 // are supported via this interface.
 //
-//go:generate sh -c "mockgen -package qtls -destination mock_client_session_cache_test.go github.com/quic-go/qtls-go1-19 ClientSessionCache"
+//go:generate sh -c "mockgen -package smtls -destination mock_client_session_cache_test.go github.com/quic-go/smtls-go1-19 ClientSessionCache"
 type ClientSessionCache = tls.ClientSessionCache
 
 // SignatureScheme is a tls.SignatureScheme

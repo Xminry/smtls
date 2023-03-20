@@ -6,8 +6,8 @@ import (
 	"encoding/pem"
 	"flag"
 	"fmt"
+	"github.com/Xminry/smtls"
 	"github.com/emmansun/gmsm/smx509"
-	"github.com/quic-go/qtls-go1-19"
 	"io"
 	"log"
 	"os"
@@ -84,10 +84,10 @@ func main() {
 	config := &tls.Config{
 		//InsecureSkipVerify: true,
 		RootCAs:          certPool,
-		CipherSuites:     []uint16{qtls.TLS_SM4_GCM_SM3},
-		MinVersion:       qtls.VersionTLS13,
-		CurvePreferences: []qtls.CurveID{qtls.CurveSM2}}
-	conn, err := qtls.Dial("tcp", "localhost:"+*port, config, nil)
+		CipherSuites:     []uint16{smtls.TLS_SM4_GCM_SM3},
+		MinVersion:       smtls.VersionTLS13,
+		CurvePreferences: []smtls.CurveID{smtls.CurveSM2}}
+	conn, err := smtls.Dial("tcp", "localhost:"+*port, config, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
