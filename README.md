@@ -15,13 +15,13 @@ satisfy RFC8998
 
 gmtls1.3
 
-a example for tls1.3 is in example-tls13
+a example for tls1.3 is in example-tls13\n
 example-tls13为一个非国密的普通tls1.3示例
 
-a example for gmtls1.3 without CA is in example-gmtls13-noCA
+a example for gmtls1.3 without CA is in example-gmtls13-noCA\n
 example-gmtls13-noCA为一个不包含CA验证的国密tls1.3示例
 
 
-a example for gmtls1.3 with CA is in example-gmtls13-CA
+a example for gmtls1.3 with CA is in example-gmtls13-CA\n
 example-gmtls13-CA为一个包含CA验证的国密tls1.3示例
 
