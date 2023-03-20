@@ -2,7 +2,7 @@ package main
 
 import (
 	"crypto/tls"
-	"crypto/x509"
+	"github.com/emmansun/gmsm/smx509"
 
 	"flag"
 	"fmt"
@@ -14,20 +14,22 @@ import (
 
 func main() {
 	port := flag.String("port", "8360", "port to connect")
-	certFile := flag.String("certfile", "testdata/example-cert.pem", "trusted CA certificate")
+	certFile := flag.String("certfile", "testdata/gm-example-cert.pem", "trusted CA certificate")
 	flag.Parse()
 	cert, err := os.ReadFile(*certFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-	certPool := x509.NewCertPool()
+	certPool := smx509.NewCertPool()
 	if ok := certPool.AppendCertsFromPEM(cert); !ok {
 		log.Fatalf("unable to parse cert from %s", *certFile)
 	}
 
-	config := &tls.Config{InsecureSkipVerify: true, CipherSuites: []uint16{qtls.TLS_SM4_GCM_SM3},
-		MinVersion:       qtls.VersionTLS13,
-		CurvePreferences: []qtls.CurveID{qtls.CurveSM2}}
+	config := &tls.Config{
+		InsecureSkipVerify: true,
+		CipherSuites:       []uint16{qtls.TLS_SM4_GCM_SM3},
+		MinVersion:         qtls.VersionTLS13,
+		CurvePreferences:   []qtls.CurveID{qtls.CurveSM2}}
 	conn, err := qtls.Dial("tcp", "localhost:"+*port, config, nil)
 	if err != nil {
 		log.Fatal(err)

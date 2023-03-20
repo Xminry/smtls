@@ -1,8 +1,8 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
-	"github.com/tjfoc/gmsm/gmtls"
 	"io"
 	"log"
 	"net"
@@ -10,22 +10,16 @@ import (
 
 func main() {
 	port := flag.String("port", "8360", "listening port")
-	certFile := flag.String("cert", "testdata/gm-example-cert.pem", "certificate PEM file")
-	keyFile := flag.String("key", "testdata/gm-example-key.pem", "key PEM file")
+	certFile := flag.String("cert", "testdata/example-cert.pem", "certificate PEM file")
+	keyFile := flag.String("key", "testdata/example-key.pem", "key PEM file")
 	flag.Parse()
-	cert, err := gmtls.LoadX509KeyPair(*certFile, *keyFile)
+	cert, err := tls.LoadX509KeyPair(*certFile, *keyFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	config := &gmtls.Config{Certificates: []gmtls.Certificate{cert},
-		CipherSuites: []uint16{gmtls.GMTLS_ECDHE_SM2_WITH_SM4_SM3},
-		MinVersion:   gmtls.VersionTLS12}
+	config := &tls.Config{Certificates: []tls.Certificate{cert}}
 	log.Printf("listening on port %s\n", *port)
-	l, err := gmtls.Listen("tcp", ":"+*port, config)
+	l, err := tls.Listen("tcp", ":"+*port, config)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,4 +36,5 @@ func main() {
 			log.Printf("closing connection from %s\n", conn.RemoteAddr())
 		}(conn)
 	}
+
 }

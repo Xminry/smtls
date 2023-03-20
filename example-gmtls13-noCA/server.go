@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"flag"
+	"fmt"
 	"github.com/quic-go/qtls-go1-19"
 	"io"
 	"log"
@@ -11,18 +12,19 @@ import (
 
 func main() {
 	port := flag.String("port", "8360", "listening port")
-	certFile := flag.String("cert", "testdata/example-cert.pem", "certificate PEM file")
-	keyFile := flag.String("key", "testdata/example-key.pem", "key PEM file")
+	certFile := flag.String("cert", "testdata/gm-example-cert.pem", "certificate PEM file")
+	keyFile := flag.String("key", "testdata/gm-example-key.pem", "key PEM file")
 	flag.Parse()
-	cert, err := tls.LoadX509KeyPair(*certFile, *keyFile)
+	cert9 := *certFile
+	key9 := *keyFile
+	fmt.Println(cert9, key9)
+	cert, err := qtls.LoadX509KeyPair(*certFile, *keyFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err != nil {
-		log.Fatal(err)
-	}
-	config := &qtls.Config{Certificates: []tls.Certificate{cert},
+	config := &qtls.Config{
+		Certificates:     []tls.Certificate{cert},
 		CipherSuites:     []uint16{qtls.TLS_SM4_GCM_SM3},
 		MinVersion:       qtls.VersionTLS13,
 		CurvePreferences: []qtls.CurveID{qtls.CurveSM2},

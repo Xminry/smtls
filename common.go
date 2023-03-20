@@ -19,7 +19,7 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
-	"github.com/tjfoc/gmsm/sm2"
+	"github.com/emmansun/gmsm/sm2"
 	"io"
 	"net"
 	"strings"
@@ -1299,6 +1299,8 @@ func (chi *clientHelloInfo) SupportsCertificate(c *Certificate) error {
 				curve = CurveP384
 			case elliptic.P521():
 				curve = CurveP521
+			case sm2.P256():
+				curve = CurveSM2
 			default:
 				return supportsRSAFallback(unsupportedCertificateError(c))
 			}
@@ -1319,25 +1321,26 @@ func (chi *clientHelloInfo) SupportsCertificate(c *Certificate) error {
 			}
 			ecdsaCipherSuite = true
 		case *rsa.PublicKey:
-		case *sm2.PublicKey:
-			var curve CurveID
-			switch pub.Curve {
-			case sm2.P256Sm2():
-				curve = CurveSM2
-			default:
-				return supportsRSAFallback(unsupportedCertificateError(c))
-			}
-			var curveOk bool
-			for _, c := range chi.SupportedCurves {
-				if c == curve && conf.supportsCurve(c) {
-					curveOk = true
-					break
-				}
-			}
-			if !curveOk {
-				return errors.New("client doesn't support certificate curve")
-			}
-			ecdsaCipherSuite = true
+
+		//case *sm2.PublicKey:
+		//	var curve CurveID
+		//	switch pub.Curve {
+		//	case sm2.P256Sm2():
+		//		curve = CurveSM2
+		//	default:
+		//		return supportsRSAFallback(unsupportedCertificateError(c))
+		//	}
+		//	var curveOk bool
+		//	for _, c := range chi.SupportedCurves {
+		//		if c == curve && conf.supportsCurve(c) {
+		//			curveOk = true
+		//			break
+		//		}
+		//	}
+		//	if !curveOk {
+		//		return errors.New("client doesn't support certificate curve")
+		//	}
+		//	ecdsaCipherSuite = true
 		default:
 			return supportsRSAFallback(unsupportedCertificateError(c))
 		}

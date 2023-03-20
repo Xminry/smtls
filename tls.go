@@ -22,8 +22,8 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"github.com/tjfoc/gmsm/sm2"
-	minx509 "minlib/minsecurity/crypto/x509"
+	"github.com/emmansun/gmsm/sm2"
+	"github.com/emmansun/gmsm/smx509"
 	"net"
 	"os"
 	"strings"
@@ -299,7 +299,7 @@ func X509KeyPair(certPEMBlock, keyPEMBlock []byte) (Certificate, error) {
 
 	// We don't need to parse the public key for TLS, but we so do anyway
 	// to check that it looks sane and matches the private key.
-	x509Cert, err := minx509.ParseCertificate(cert.Certificate[0])
+	x509Cert, err := smx509.ParseCertificate(cert.Certificate[0])
 	if err != nil {
 		return fail(err)
 	}
@@ -334,14 +334,6 @@ func X509KeyPair(certPEMBlock, keyPEMBlock []byte) (Certificate, error) {
 		if !bytes.Equal(priv.Public().(ed25519.PublicKey), pub) {
 			return fail(errors.New("tls: private key does not match public key"))
 		}
-	case *sm2.PublicKey:
-		priv, ok := cert.PrivateKey.(*sm2.PrivateKey)
-		if !ok {
-			return fail(errors.New("tls: private key type does not match public key type"))
-		}
-		if pub.X.Cmp(priv.X) != 0 || pub.Y.Cmp(priv.Y) != 0 {
-			return fail(errors.New("tls: private key does not match public key"))
-		}
 
 	default:
 		return fail(errors.New("tls: unknown public key algorithm"))
@@ -358,7 +350,7 @@ func parsePrivateKey(der []byte) (crypto.PrivateKey, error) {
 	if key, err := x509.ParsePKCS1PrivateKey(der); err == nil {
 		return key, nil
 	}
-	if key, err := minx509.ParsePKCS8PrivateKey(der); err == nil {
+	if key, err := x509.ParsePKCS8PrivateKey(der); err == nil {
 		switch key := key.(type) {
 		case *rsa.PrivateKey, *ecdsa.PrivateKey, ed25519.PrivateKey, *sm2.PrivateKey:
 			return key, nil
@@ -366,7 +358,7 @@ func parsePrivateKey(der []byte) (crypto.PrivateKey, error) {
 			return nil, errors.New("tls: found unknown private key type in PKCS#8 wrapping")
 		}
 	}
-	if key, err := x509.ParseECPrivateKey(der); err == nil {
+	if key, err := smx509.ParseECPrivateKey(der); err == nil {
 		return key, nil
 	}
 	return nil, errors.New("tls: failed to parse private key")

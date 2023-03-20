@@ -8,9 +8,11 @@ import (
 	"bytes"
 	"context"
 	"crypto"
+	"crypto/ecdsa"
 	"crypto/hmac"
 	"crypto/rsa"
 	"errors"
+	"github.com/emmansun/gmsm/sm2"
 	"hash"
 	"io"
 	"sync/atomic"
@@ -681,7 +683,17 @@ func (hs *serverHandshakeStateTLS13) sendServerCertificate() error {
 	if sigType == signatureRSAPSS {
 		signOpts = &rsa.PSSOptions{SaltLength: rsa.PSSSaltLengthEqualsHash, Hash: sigHash}
 	}
-	sig, err := hs.cert.PrivateKey.(crypto.Signer).Sign(c.config.rand(), signed, signOpts)
+	//sig, err := hs.cert.PrivateKey.(crypto.Signer).Sign(c.config.rand(), signed, signOpts)
+	var sig []byte
+	ep, ok := hs.cert.PrivateKey.(*ecdsa.PrivateKey)
+
+	if ok && ep.Curve.Params().Name == sm2.P256().Params().Name {
+		sm2pri := sm2.PrivateKey{*ep}
+		sig, err = sm2pri.Sign(c.config.rand(), signed, signOpts)
+
+	} else {
+		sig, err = hs.cert.PrivateKey.(crypto.Signer).Sign(c.config.rand(), signed, signOpts)
+	}
 	if err != nil {
 		public := hs.cert.PrivateKey.(crypto.Signer).Public()
 		if rsaKey, ok := public.(*rsa.PublicKey); ok && sigType == signatureRSAPSS &&

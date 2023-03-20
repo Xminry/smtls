@@ -13,7 +13,7 @@ import (
 	"crypto/rsa"
 	"errors"
 	"fmt"
-	"github.com/tjfoc/gmsm/sm2"
+	"github.com/emmansun/gmsm/sm2"
 	"hash"
 	"io"
 )
@@ -56,12 +56,28 @@ func verifyHandshakeSignature(sigType uint8, pubkey crypto.PublicKey, hashFunc c
 			return err
 		}
 	case signatureSM3:
-		pubKey, ok := pubkey.(*sm2.PublicKey)
+		//var pubKey *sm2.PublicKey
+		//pubKey, ok := pubkey.(*sm2.PublicKey)
+		//if !ok {
+		//	pubKey1, ok1 := pubkey.(*ecdsa.PublicKey)
+		//	if !ok1 {
+		//		return errors.New("tls: SM2 signing requires a SM2 public key")
+		//	}
+		//	pubKey = &sm2.PublicKey{
+		//		Curve: pubKey1.Curve,
+		//		X:     pubKey1.X,
+		//		Y:     pubKey1.Y,
+		//	}
+		//}
+		//if ok := pubKey.Verify(signed, sig); !ok {
+		//	return errors.New("verify sm2 signature error")
+		//}
+		pubKey, ok := pubkey.(*ecdsa.PublicKey)
 		if !ok {
-			return errors.New("tls: SM2 signing requires a SM2 public key")
+			return fmt.Errorf("expected an ECDSA SM2 public key, got %T", pubkey)
 		}
-		if ok := pubKey.Verify(signed, sig); !ok {
-			return errors.New("verify sm2 signature error")
+		if !sm2.VerifyASN1(pubKey, signed, sig) {
+			return errors.New("ECDSA SM2 verification failure")
 		}
 
 	default:
@@ -212,6 +228,8 @@ func signatureSchemesForCertificate(version uint16, cert *Certificate) []Signatu
 			sigAlgs = []SignatureScheme{ECDSAWithP384AndSHA384}
 		case elliptic.P521():
 			sigAlgs = []SignatureScheme{ECDSAWithP521AndSHA512}
+		case sm2.P256():
+			sigAlgs = []SignatureScheme{SM2Sig_SM3}
 		default:
 			return nil
 		}
@@ -225,8 +243,8 @@ func signatureSchemesForCertificate(version uint16, cert *Certificate) []Signatu
 		}
 	case ed25519.PublicKey:
 		sigAlgs = []SignatureScheme{Ed25519}
-	case *sm2.PublicKey:
-		sigAlgs = []SignatureScheme{SM2Sig_SM3}
+	//case *sm2.PublicKey:
+	//	sigAlgs = []SignatureScheme{SM2Sig_SM3}
 	default:
 		return nil
 	}
@@ -292,18 +310,19 @@ func unsupportedCertificateError(cert *Certificate) error {
 		case elliptic.P256():
 		case elliptic.P384():
 		case elliptic.P521():
+		case sm2.P256():
 		default:
 			return fmt.Errorf("tls: unsupported certificate curve (%s)", pub.Curve.Params().Name)
 		}
 	case *rsa.PublicKey:
 		return fmt.Errorf("tls: certificate RSA key size too small for supported signature algorithms")
 	case ed25519.PublicKey:
-	case *sm2.PublicKey:
-		switch pub.Curve {
-		case sm2.P256Sm2():
-		default:
-			return fmt.Errorf("tls: unsupported certificate curve (%s)", pub.Curve.Params().Name)
-		}
+	//case *sm2.PublicKey:
+	//	switch pub.Curve {
+	//	case sm2.P256Sm2():
+	//	default:
+	//		return fmt.Errorf("tls: unsupported certificate curve (%s)", pub.Curve.Params().Name)
+	//	}
 
 	default:
 		return fmt.Errorf("tls: unsupported certificate key (%T)", pub)

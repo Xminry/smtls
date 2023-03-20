@@ -7,7 +7,7 @@ package qtls
 
 import (
 	"crypto"
-	"github.com/tjfoc/gmsm/sm3"
+	"github.com/emmansun/gmsm/sm3"
 	"hash"
 	"io"
 	"strconv"

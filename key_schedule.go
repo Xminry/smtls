@@ -9,7 +9,7 @@ import (
 	"crypto/hmac"
 	"errors"
 	"fmt"
-	"github.com/tjfoc/gmsm/sm2"
+	"github.com/emmansun/gmsm/sm2"
 	"hash"
 	"io"
 	"math/big"
@@ -163,7 +163,7 @@ func curveForCurveID(id CurveID) (elliptic.Curve, bool) {
 	case CurveP521:
 		return elliptic.P521(), true
 	case CurveSM2:
-		return sm2.P256Sm2(), true
+		return sm2.P256(), true
 	default:
 		return nil, false
 	}

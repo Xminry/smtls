@@ -13,8 +13,7 @@ import (
 	"crypto/rsa"
 	"crypto/subtle"
 	"crypto/x509"
-	"github.com/tjfoc/gmsm/sm2"
-	minx509 "minlib/minsecurity/crypto/x509"
+	"github.com/emmansun/gmsm/smx509"
 
 	//"crypto/x509/pkix"
 	"errors"
@@ -969,7 +968,7 @@ func (c *Conn) verifyServerCertificate(certificates [][]byte) error {
 	certs := make([]*x509.Certificate, len(certificates))
 
 	for i, asn1Data := range certificates {
-		cert, err := minx509.ParseCertificate(asn1Data)
+		cert, err := smx509.ParseCertificate(asn1Data)
 
 		if err != nil {
 			c.sendAlert(alertBadCertificate)
@@ -1049,7 +1048,7 @@ func (c *Conn) verifyServerCertificate(certificates [][]byte) error {
 	}
 
 	switch certs[0].PublicKey.(type) {
-	case *rsa.PublicKey, *ecdsa.PublicKey, ed25519.PublicKey, *sm2.PublicKey:
+	case *rsa.PublicKey, *ecdsa.PublicKey, ed25519.PublicKey:
 		break
 	default:
 		c.sendAlert(alertUnsupportedCertificate)

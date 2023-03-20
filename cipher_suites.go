@@ -14,7 +14,7 @@ import (
 	"crypto/sha1"
 	"crypto/sha256"
 	"fmt"
-	"github.com/tjfoc/gmsm/sm4"
+	"github.com/emmansun/gmsm/sm4"
 	"hash"
 
 	"golang.org/x/crypto/chacha20poly1305"
